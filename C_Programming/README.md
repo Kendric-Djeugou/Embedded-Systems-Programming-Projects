@@ -1,0 +1,12 @@
+# C Programming Projects
+
+These programs were developed to strengthen my understanding of core C programming concepts relevant to embedded systems.
+
+## Topics Covered
+- Variables and data types
+- Loops and conditionals
+- Arrays and functions
+- Basic algorithms
+
+## Notes
+Code was written and tested using an online C compiler and follows standard C syntax.
