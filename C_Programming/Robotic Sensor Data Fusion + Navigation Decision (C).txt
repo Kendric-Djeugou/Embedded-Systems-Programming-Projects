@@ -1,0 +1,138 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_ENV 20
+
+// Function prototypes
+float calculateSafetyScore(float distance, float temperature, float light);
+void classifyEnvironment(float score, char status[]);
+void displayReport(int id, char name[],
+                   float distance, float temperature, float light,
+                   float score, char status[], char navigation[]);
+void decideNavigation(float score, float distance, char navigation[]);
+
+// Sensor fusion algorithm
+float calculateSafetyScore(float distance, float temperature, float light) {
+    float distanceScore, temperatureScore, lightScore;
+
+    // Distance sensor logic
+    if (distance >= 100)
+        distanceScore = 100;
+    else if (distance >= 50)
+        distanceScore = 70;
+    else
+        distanceScore = 30;
+
+    // Temperature sensor logic
+    if (temperature >= 15 && temperature <= 35)
+        temperatureScore = 100;
+    else if (temperature >= 5 && temperature <= 45)
+        temperatureScore = 60;
+    else
+        temperatureScore = 20;
+
+    // Light sensor logic
+    if (light >= 300)
+        lightScore = 100;
+    else if (light >= 150)
+        lightScore = 60;
+    else
+        lightScore = 30;
+
+    // Sensor fusion (weighted average)
+    return (0.4 * distanceScore) +
+           (0.35 * temperatureScore) +
+           (0.25 * lightScore);
+}
+
+// Classify environment
+void classifyEnvironment(float score, char status[]) {
+    if (score >= 75)
+        strcpy(status, "SAFE");
+    else if (score >= 50)
+        strcpy(status, "CAUTION");
+    else
+        strcpy(status, "DANGEROUS");
+}
+
+// Decide navigation based on safety score and distance
+void decideNavigation(float score, float distance, char navigation[]) {
+    if (score >= 75)
+        strcpy(navigation, "MOVE");
+    else if (score >= 50)
+        strcpy(navigation, "TURN");
+    else
+        strcpy(navigation, "STOP");
+}
+
+// Display environment report
+void displayReport(int id, char name[],
+                   float distance, float temperature, float light,
+                   float score, char status[], char navigation[]) {
+
+    printf("\n--------------------------------------------\n");
+    printf("Environment ID      : %d\n", id);
+    printf("Environment Name    : %s\n", name);
+    printf("Distance Sensor     : %.2f cm\n", distance);
+    printf("Temperature Sensor  : %.2f °C\n", temperature);
+    printf("Light Intensity     : %.2f lux\n", light);
+    printf("Safety Score        : %.2f\n", score);
+    printf("Environment Status  : %s\n", status);
+    printf("Navigation Decision : %s\n", navigation);
+}
+
+int main() {
+    int n;
+    char envName[MAX_ENV][40];
+    char status[MAX_ENV][20];
+    char navigation[MAX_ENV][20];
+    float distance[MAX_ENV];
+    float temperature[MAX_ENV];
+    float light[MAX_ENV];
+    float safetyScore[MAX_ENV];
+
+    printf("==== ROBOTIC SENSOR DATA FUSION SYSTEM ====\n");
+    printf("Enter number of environments to analyze: ");
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i++) {
+        printf("\nEnvironment %d\n", i + 1);
+
+        printf("Environment Name: ");
+        scanf(" %[^\n]", envName[i]);
+
+        printf("Ultrasonic Distance (cm): ");
+        scanf("%f", &distance[i]);
+
+        printf("Temperature (°C): ");
+        scanf("%f", &temperature[i]);
+
+        printf("Light Intensity (lux): ");
+        scanf("%f", &light[i]);
+
+        // Calculate sensor fusion score
+        safetyScore[i] = calculateSafetyScore(distance[i], temperature[i], light[i]);
+
+        // Classify environment
+        classifyEnvironment(safetyScore[i], status[i]);
+
+        // Decide robot navigation
+        decideNavigation(safetyScore[i], distance[i], navigation[i]);
+    }
+
+    printf("\n\n===== ENVIRONMENT SAFETY & NAVIGATION REPORT =====\n");
+    for (int i = 0; i < n; i++) {
+        displayReport(
+            i + 1,
+            envName[i],
+            distance[i],
+            temperature[i],
+            light[i],
+            safetyScore[i],
+            status[i],
+            navigation[i]
+        );
+    }
+
+    return 0;
+}
